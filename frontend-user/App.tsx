@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { GoogleMap, Polyline, Marker } from '@react-google-maps/api';
+import { GoogleMap, Polyline, Marker, useJsApiLoader } from '@react-google-maps/api';
 import { Search, MapPin, X, Navigation, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { socket } from '../services/mockSocket';
@@ -16,7 +16,15 @@ const STOPS_MOCK: Stop[] = [
   { name: "Celebration Mall", status: "upcoming", time: "11:00 AM" }
 ];
 
+const libraries: ("places" | "geometry" | "drawing" | "visualization")[] = ["places", "geometry"];
+
 const UserApp: React.FC = () => {
+  const { isLoaded } = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "",
+    libraries
+  });
+
   const [activeBuses, setActiveBuses] = useState<Record<string, BusLocation>>({});
   const [search, setSearch] = useState("");
   const [selectedRoute, setSelectedRoute] = useState<BusRoute | null>(null);
@@ -48,8 +56,8 @@ const UserApp: React.FC = () => {
   const filteredResults = useMemo(() => {
     if (!search.trim()) return [];
     const q = search.toLowerCase();
-    return UDAIPUR_ROUTES.filter(r => 
-      r.stops.some(s => s.toLowerCase().includes(q)) || 
+    return UDAIPUR_ROUTES.filter(r =>
+      r.stops.some(s => s.toLowerCase().includes(q)) ||
       r.routeNumber.toLowerCase().includes(q)
     );
   }, [search]);
@@ -67,6 +75,8 @@ const UserApp: React.FC = () => {
       { "featureType": "transit", "stylers": [{ "visibility": "off" }] }
     ]
   };
+
+  if (!isLoaded) return <div className="h-screen w-full flex items-center justify-center bg-slate-50 font-bold text-slate-400">Loading Maps...</div>;
 
   return (
     <div className="h-screen w-full flex flex-col bg-slate-50 overflow-hidden relative">
@@ -99,10 +109,10 @@ const UserApp: React.FC = () => {
               }}
             />
           ))}
-          
+
           {/* User Blue Dot Marker */}
-          <Marker 
-            position={userLocation} 
+          <Marker
+            position={userLocation}
             icon={{
               path: (window as any).google?.maps?.SymbolPath?.CIRCLE || 0,
               scale: 8,
@@ -130,19 +140,19 @@ const UserApp: React.FC = () => {
             <div className="max-w-md mx-auto bg-white rounded-[32px] shadow-2xl border border-slate-100 overflow-hidden">
               <div className="flex items-center px-6 py-4 gap-4">
                 <Search className="text-slate-400" size={24} />
-                <input 
+                <input
                   className="flex-1 outline-none text-lg font-bold text-slate-800"
                   placeholder="Where to? (e.g. Amberi)"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
               </div>
-              
+
               <AnimatePresence>
                 {filteredResults.length > 0 && (
                   <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="overflow-hidden border-t border-slate-50 bg-white">
                     {filteredResults.map(r => (
-                      <button 
+                      <button
                         key={r.routeNumber}
                         onClick={() => handleSelectRoute(r)}
                         className="w-full text-left px-8 py-5 flex items-center justify-between hover:bg-slate-50 border-b border-slate-50 last:border-0"
