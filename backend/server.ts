@@ -21,6 +21,11 @@ const io = new Server(server, {
 app.use(cors() as any);
 app.use(express.json() as any);
 
+// Root route for deployment health check
+app.get('/', (req, res) => {
+  res.send('UdaipurLink Backend is running!');
+});
+
 // API Routes
 app.use('/api', apiRoutes);
 
