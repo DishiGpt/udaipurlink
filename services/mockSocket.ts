@@ -1,35 +1,8 @@
+import { io } from 'socket.io-client';
 
-import { BusLocation } from '../types';
+const URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
-type EventCallback = (data: any) => void;
-
-class MockSocketService {
-  private listeners: { [key: string]: EventCallback[] } = {};
-
-  on(event: string, callback: EventCallback) {
-    if (!this.listeners[event]) {
-      this.listeners[event] = [];
-    }
-    this.listeners[event].push(callback);
-  }
-
-  emit(event: string, data: any) {
-    // If it's a driver update, we "broadcast" it as a bus location change
-    if (event === 'driver-location-update') {
-      this.broadcast('bus-location-changed', data);
-    }
-  }
-
-  private broadcast(event: string, data: any) {
-    if (this.listeners[event]) {
-      this.listeners[event].forEach(cb => cb(data));
-    }
-  }
-
-  off(event: string, callback: EventCallback) {
-    if (!this.listeners[event]) return;
-    this.listeners[event] = this.listeners[event].filter(cb => cb !== callback);
-  }
-}
-
-export const socket = new MockSocketService();
+export const socket = io(URL, {
+    transports: ['websocket'],
+    autoConnect: true
+});

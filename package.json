@@ -9,16 +9,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "lucide-react": "^0.563.0",
-    "react-dom": "^19.2.4",
-    "react": "^19.2.4",
-    "express": "^5.2.1",
-    "cors": "^2.8.6",
-    "mongoose": "^9.1.5",
-    "http": "^0.0.1-security",
-    "socket.io": "^4.8.3",
     "@react-google-maps/api": "^2.20.8",
-    "framer-motion": "^12.29.2"
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "framer-motion": "^12.29.2",
+    "http": "^0.0.1-security",
+    "lucide-react": "^0.563.0",
+    "mongoose": "^9.1.5",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
